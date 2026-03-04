@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNS Monitor</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
+    th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; }
+    th { background: #f3f3f3; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    .card { border: 1px solid #ddd; padding: 16px; border-radius: 8px; }
+    .inline { display: inline; }
+  </style>
+</head>
+<body>
+  <h1>DNS Monitor Dashboard</h1>
+
+  <div class="card">
+    <h2>도메인 추가</h2>
+    <form method="post" action="/ui/domains">
+      <label>Domain: <input type="text" name="domain" placeholder="example.com" required /></label>
+      <label>Interval(sec): <input type="number" name="check_interval_sec" value="300" min="60" /></label>
+      <label>Enabled: <input type="checkbox" name="enabled" checked /></label>
+      <button type="submit">추가</button>
+    </form>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Monitored Domains</h2>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Domain</th><th>Enabled</th><th>Interval</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for d in domains %}
+          <tr>
+            <td>{{ d.id }}</td>
+            <td>{{ d.domain }}</td>
+            <td>{{ d.enabled }}</td>
+            <td>{{ d.check_interval_sec }}</td>
+            <td>
+              <form class="inline" method="post" action="/ui/domains/{{ d.id }}/run">
+                <button type="submit">즉시 점검</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Recent Change Events</h2>
+      <table>
+        <thead>
+          <tr><th>Time</th><th>Domain</th><th>Type</th><th>Summary</th></tr>
+        </thead>
+        <tbody>
+          {% for e in recent_events %}
+          <tr>
+            <td>{{ e.detected_at }}</td>
+            <td>{{ e.domain.domain }}</td>
+            <td>{{ e.change_type }}</td>
+            <td>{{ e.summary }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Recent Snapshots</h2>
+      <table>
+        <thead>
+          <tr><th>Time</th><th>Domain</th><th>Status</th><th>Error</th></tr>
+        </thead>
+        <tbody>
+          {% for s in recent_snapshots %}
+          <tr>
+            <td>{{ s.checked_at }}</td>
+            <td>{{ s.domain.domain }}</td>
+            <td>{{ s.status }}</td>
+            <td>{{ s.error_message or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
