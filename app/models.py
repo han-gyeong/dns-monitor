@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -27,7 +28,7 @@ class DNSSnapshot(Base):
     domain_id: Mapped[int] = mapped_column(ForeignKey("monitored_domain.id"), index=True)
     checked_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
     status: Mapped[str] = mapped_column(String(30), default="success")
-    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     domain = relationship("MonitoredDomain", back_populates="snapshots")
     mx_records = relationship("MXRecord", back_populates="snapshot", cascade="all, delete-orphan")
@@ -79,6 +80,6 @@ class NotificationLog(Base):
     channel: Mapped[str] = mapped_column(String(30), default="email")
     sent_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     status: Mapped[str] = mapped_column(String(30), nullable=False)
-    response: Mapped[str | None] = mapped_column(Text, nullable=True)
+    response: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     event = relationship("ChangeEvent", back_populates="notifications")

@@ -75,7 +75,7 @@
       <h2>Recent Snapshots</h2>
       <table>
         <thead>
-          <tr><th>Time</th><th>Domain</th><th>Status</th><th>Error</th></tr>
+          <tr><th>Time</th><th>Domain</th><th>Status</th><th>MX</th><th>A(IP)</th><th>Error</th></tr>
         </thead>
         <tbody>
           {% for s in recent_snapshots %}
@@ -83,6 +83,24 @@
             <td>{{ s.checked_at }}</td>
             <td>{{ s.domain.domain }}</td>
             <td>{{ s.status }}</td>
+            <td>
+              {% if s.mx_records %}
+                {% for mx in s.mx_records %}
+                  {{ mx.priority }} {{ mx.exchange }}<br />
+                {% endfor %}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              {% if s.mx_a_records %}
+                {% for a in s.mx_a_records %}
+                  {{ a.exchange }} -> {{ a.ipv4 }}<br />
+                {% endfor %}
+              {% else %}
+                -
+              {% endif %}
+            </td>
             <td>{{ s.error_message or '-' }}</td>
           </tr>
           {% endfor %}

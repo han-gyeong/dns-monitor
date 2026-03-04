@@ -100,7 +100,11 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
     )
     recent_snapshots = (
         db.query(DNSSnapshot)
-        .options(joinedload(DNSSnapshot.domain))
+        .options(
+            joinedload(DNSSnapshot.domain),
+            joinedload(DNSSnapshot.mx_records),
+            joinedload(DNSSnapshot.mx_a_records),
+        )
         .order_by(desc(DNSSnapshot.checked_at))
         .limit(20)
         .all()

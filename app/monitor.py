@@ -3,6 +3,7 @@ import json
 import os
 import smtplib
 from email.message import EmailMessage
+from typing import Optional
 
 import dns.resolver
 from sqlalchemy import desc
@@ -60,7 +61,7 @@ class DNSMonitorService:
         a_set = {(m.exchange, m.ipv4) for m in snapshot.mx_a_records}
         return mx_set, a_set
 
-    def detect_changes(self, prev: DNSSnapshot | None, current: DNSSnapshot):
+    def detect_changes(self, prev: Optional[DNSSnapshot], current: DNSSnapshot):
         if prev is None:
             return []
 
